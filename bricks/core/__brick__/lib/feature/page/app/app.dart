@@ -10,6 +10,8 @@ import '../../providers/siren_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../router/app_router.dart';
 import '../no_connectivity/no_connectivity.dart';
+import '../../router/app_router.routes.dart';
+import '../../../core/res/l10n/app_localizations.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});

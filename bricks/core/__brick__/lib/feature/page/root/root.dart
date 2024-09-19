@@ -6,13 +6,13 @@ import 'package:route_map/route_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @RouteMap(name: "/")
-class RootPage extends StatefulWidget {
+class RootPage extends ConsumerStatefulWidget {
   const RootPage({super.key});
   @override
-  State<RootPage> createState() => _RootPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _RootPageState();
 }
 
-class _RootPageState extends BaseState<RootViewModel, RootPage> {
+class _RootPageState extends ConsumerState<RootPage> {
   final List<NavItemModel> _items = [
     NavItemModel(
         icon: Icons.home,
@@ -38,22 +38,24 @@ class _RootPageState extends BaseState<RootViewModel, RootPage> {
                   )),
           onGenerateRoute: onGenerateRoute));
   @override
-  Widget build(BuildContext context) => Scaffold(
-      body: content,
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: currentIndex,
-        onTap: (i) {
-          currentIndex = i;
-          setState(() {});
-        },
-        items: _items
-            .map((e) => BottomNavigationBarItem(
-                  icon: Icon(e.icon),
-                  label: e.label(context),
-                ))
-            .toList(),
-      ));
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: content,
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: currentIndex,
+          onTap: (i) {
+            currentIndex = i;
+            setState(() {});
+          },
+          items: _items
+              .map((e) => BottomNavigationBarItem(
+                    icon: Icon(e.icon),
+                    label: e.label(context),
+                  ))
+              .toList(),
+        ));
+  }
 }
 
 class NavItemModel {

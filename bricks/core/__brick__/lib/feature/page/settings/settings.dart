@@ -12,127 +12,83 @@ import '../../../feature/providers/theme_provider.dart';
 import 'package:route_map/route_map.dart';
 
 @RouteMap(name: "settings")
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
-  @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
 
-class _SettingsPageState extends BaseState<SettingsViewModel, SettingsPage> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeProviderNotifier = ref.watch(themeViewModelProvider.notifier);
+    final themeProvider = ref.watch(themeViewModelProvider);
+    final localeProviderNotifier = ref.watch(localeViewModelProvider.notifier);
+    final sirenProviderNotifier = ref.read(sirenViewModelProvider.notifier);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.settings),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Divider(),
-            ListTile(
-              onTap: () {
-                if (Platform.isIOS) {
-                  AppSettings.openAppSettings(type: AppSettingsType.appLocale);
-                } else if (Platform.isAndroid) {
-                  showModalBottomSheet<Locale?>(
-                      showDragHandle: true,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ListTile(
+                onTap: () {
+                  if (Platform.isIOS) {
+                    AppSettings.openAppSettings(
+                        type: AppSettingsType.appLocale);
+                  } else if (Platform.isAndroid) {
+                    showModalBottomSheet<Locale?>(
+                        showDragHandle: true,
+                        context: context,
+                        useRootNavigator: true,
+                        builder: (c) => ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: AppLocalizations.supportedLocales.length,
+                            itemBuilder: (c, i) {
+                              var item = AppLocalizations.supportedLocales[i];
+                              return ListTile(
+                                onTap: () {
+                                  Navigator.pop(c, item);
+                                },
+                                title: Text(item.fullName()),
+                              );
+                            })).then((value) async {
+                      if (value != null) {
+                        await localeProviderNotifier.setLocale(value);
+                      }
+                    });
+                  }
+                },
+                title: Text(context.l10n.language),
+                leading: const Icon(AppIcons.language),
+                trailing: const Icon(AppIcons.chevronRight),
+              ),
+              ListTile(
+                leading: const Icon(AppIcons.darkMode),
+                title: Text(context.l10n.appearance),
+                trailing: Switch(
+                  value: themeProvider == ThemeMode.dark,
+                  onChanged: (value) {
+                    themeProviderNotifier.toggleTheme();
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text(context.l10n.version),
+                leading: const Icon(AppIcons.version),
+                subtitle: Text(sirenProviderNotifier.currentVersion),
+              ),
+              ListTile(
+                title: Text(context.l10n.licenses),
+                leading: const Icon(AppIcons.license),
+                trailing: const Icon(AppIcons.chevronRight),
+                onTap: () {
+                  showLicensePage(
                       context: context,
                       useRootNavigator: true,
-                      builder: (c) => ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: AppLocalizations.supportedLocales.length,
-                          itemBuilder: (c, i) {
-                            var item = AppLocalizations.supportedLocales[i];
-                            return ListTile(
-                              onTap: () {
-                                Navigator.pop(c, item);
-                              },
-                              title: Text(item.fullName()),
-                            );
-                          })).then((value) {
-                    if (value != null) {
-                      getIt<AppViewModel>().setLocale(value);
-                      Restart.restartApp();
-                    }
-                  });
-                }
-              },
-              title: Text(context.l10n.language),
-              leading: const Icon(AppIcons.language),
-              trailing: const Icon(AppIcons.chevronRight),
-            ),
-            const Divider(),
-            Consumer(
-                viewModel: getIt<AppViewModel>(),
-                builder: (context, vm) {
-                  return ListTile(
-                    title: Text(context.l10n.appearance),
-                    onTap: () {
-                      showModalBottomSheet(
-                          context: context,
-                          showDragHandle: true,
-                          useRootNavigator: true,
-                          builder: (c) => SingleChildScrollView(
-                                child: SafeArea(
-                                  child: Column(
-                                    children: [
-                                      RadioListTile<ThemeMode>(
-                                        value: ThemeMode.light,
-                                        groupValue: vm.appearance,
-                                        onChanged: (v) {
-                                          vm.setDarkMode(ThemeMode.light);
-                                          Navigator.pop(c);
-                                        },
-                                        title: Text(context.l10n.light),
-                                      ),
-                                      RadioListTile(
-                                        value: ThemeMode.dark,
-                                        groupValue: vm.appearance,
-                                        onChanged: (v) {
-                                          vm.setDarkMode(ThemeMode.dark);
-                                          Navigator.pop(c);
-                                        },
-                                        title: Text(context.l10n.dark),
-                                      ),
-                                      RadioListTile(
-                                        value: ThemeMode.system,
-                                        groupValue: vm.appearance,
-                                        onChanged: (v) {
-                                          vm.setDarkMode(ThemeMode.system);
-                                          Navigator.pop(c);
-                                        },
-                                        title: Text(context.l10n.systemDefault),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ));
-                    },
-                    leading: const Icon(AppIcons.lightMode),
-                    trailing: const Icon(AppIcons.chevronRight),
-                  );
-                }),
-            const Divider(),
-            ListTile(
-              title: Text(context.l10n.version),
-              leading: const Icon(AppIcons.version),
-              subtitle: Text(viewModel.appVersion),
-            ),
-            const Divider(),
-            ListTile(
-              title: Text(context.l10n.licenses),
-              leading: const Icon(AppIcons.license),
-              trailing: const Icon(AppIcons.chevronRight),
-              onTap: () {
-                showLicensePage(
-                    context: context,
-                    useRootNavigator: true,
-                    applicationName: viewModel.appName,
-                    applicationVersion: viewModel.appVersion,
-                    applicationLegalese: "Mertcan Erbaşı");
-              },
-            )
-          ],
+                      applicationName: "App Name",
+                      applicationVersion: sirenProviderNotifier.currentVersion,
+                      applicationLegalese: "Mertcan Erbaşı");
+                },
+              )
+            ],
+          ),
         ),
       ),
     );
