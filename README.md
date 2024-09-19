@@ -10,10 +10,9 @@ dart pub global activate mason_cli
 mason init
 
 # 📦 Install your first brick
-mason add core --git-url https://github.com/mertcanerbasi/flutter_mason --git-path ./bricks/core
-mason add repository --git-url https://github.com/mertcanerbasi/flutter_mason --git-path ./bricks/repository
-mason add service --git-url https://github.com/mertcanerbasi/flutter_mason --git-path ./bricks/service
-mason add page --git-url https://github.com/mertcanerbasi/flutter_mason --git-path ./bricks/page
+mason add core --git-url https://github.com/mertcanerbasi/flutter_mason_riverpod --git-path ./bricks/core
+mason add repository --git-url https://github.com/mertcanerbasi/flutter_mason_riverpod --git-path ./bricks/repository
+mason add service --git-url https://github.com/mertcanerbasi/flutter_mason_riverpod --git-path ./bricks/service
 mason get
 
 # 📝 Code fix
