@@ -8,6 +8,7 @@ class AppStorage {
   final SharedPreferences _storage;
   T? read<T>(String key) {
     String? readData = _storage.getString(AesEncrypt.encrypt(key));
+    if (readData == null) return null;
     String data = AesEncrypt.decrypt(readData);
     switch (T) {
       case const (int):
@@ -23,7 +24,6 @@ class AppStorage {
       default:
         throw Exception('Not yet implemented $key');
     }
-    return null;
   }
 
   Future<bool> write(String key, dynamic value) => value == null
