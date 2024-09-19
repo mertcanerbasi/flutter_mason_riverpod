@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-
+import '../../core/di/locator.dart';
 import '../../core/siren/siren.dart';
 import '../data/repository/app_repository.dart';
 
